@@ -1,0 +1,6 @@
+name,asset_type,environment,ip_or_host,internet_facing,business_value_inr,revenue_impact_per_day_inr,data_sensitivity,operational_criticality,regulatory_importance,records_count,owner
+Customer Portal Web Tier,app,production,portal.example.internal,true,80000000,3000000,4,5,4,250000,Platform Team
+Billing Database,database,production,db-billing.internal,false,120000000,5000000,5,5,5,500000,Finance IT
+Partner API Gateway,app,production,api.example.internal,true,60000000,2500000,3,4,3,120000,Integration Team
+Internal HR System,saas,production,hr.example.internal,false,25000000,800000,4,3,4,40000,HR Ops
+Analytics Warehouse,database,staging,warehouse.internal,false,30000000,600000,3,2,2,90000,Data Team

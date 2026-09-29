@@ -1,0 +1,7 @@
+{
+  "rows": [
+    {"name": "Mobile Banking Backend", "asset_type": "app", "environment": "production", "ip_or_host": "mbank.example.internal", "internet_facing": true, "business_value_inr": 150000000, "revenue_impact_per_day_inr": 6000000, "data_sensitivity": 5, "operational_criticality": 5, "regulatory_importance": 5, "records_count": 800000, "owner": "Digital Banking"},
+    {"name": "Payment Switch", "asset_type": "server", "environment": "production", "ip_or_host": "switch.example.internal", "internet_facing": false, "business_value_inr": 200000000, "revenue_impact_per_day_inr": 9000000, "data_sensitivity": 5, "operational_criticality": 5, "regulatory_importance": 5, "records_count": 0, "owner": "Payments Team"},
+    {"name": "Marketing Website", "asset_type": "app", "environment": "production", "ip_or_host": "www.example.com", "internet_facing": true, "business_value_inr": 10000000, "revenue_impact_per_day_inr": 200000, "data_sensitivity": 1, "operational_criticality": 2, "regulatory_importance": 1, "records_count": 5000, "owner": "Marketing"}
+  ]
+}

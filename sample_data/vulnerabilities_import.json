@@ -1,0 +1,8 @@
+{
+  "rows": [
+    {"asset_id": 1, "title": "Log4Shell in legacy service", "cve_id": "CVE-2021-44228", "cvss": 10.0, "severity": "Critical", "category": "software", "status": "open", "exploit_available": true, "internet_exposed": true, "patch_available": true, "age_days": 30, "remediation_cost_inr": 500000, "source": "Sample Import (JSON)"},
+    {"asset_id": 2, "title": "Deserialization flaw in API", "cve_id": "CVE-2023-46604", "cvss": 9.8, "severity": "Critical", "category": "software", "status": "open", "exploit_available": true, "internet_exposed": true, "patch_available": false, "age_days": 18, "remediation_cost_inr": 650000, "source": "Sample Import (JSON)"},
+    {"asset_id": 3, "title": "Stored XSS in admin console", "cvss": 6.1, "severity": "Medium", "category": "web", "status": "remediating", "exploit_available": false, "internet_exposed": true, "patch_available": true, "age_days": 40, "remediation_cost_inr": 180000, "source": "Sample Import (JSON)"},
+    {"asset_id": 4, "title": "Default credentials on service account", "cvss": 8.1, "severity": "High", "category": "identity", "status": "open", "exploit_available": false, "internet_exposed": false, "patch_available": true, "age_days": 75, "remediation_cost_inr": 120000, "source": "Sample Import (JSON)"}
+  ]
+}

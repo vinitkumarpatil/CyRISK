@@ -1,0 +1,35 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# --- Environment & secrets ---
+.env
+*.local.env
+!.env.example
+
+# --- Databases & generated artifacts ---
+*.db
+*.sqlite3
+backend/generated_reports/
+backend/ml_incident_model.joblib
+
+# --- Node / frontend ---
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.log
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# --- Internal backup (not for publishing) ---
+_recovery_snapshot_*/

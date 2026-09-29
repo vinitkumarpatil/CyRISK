@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===================================================================== */
+/*  Day / Night theme tokens                                             */
+/*  A single semantic class (bg-panel, text-body, border-hairline …)     */
+/*  resolves through these CSS variables, so every component adapts to   */
+/*  the active theme. NIGHT is the default (:root); .theme-day overrides.*/
+/* ===================================================================== */
+:root {
+  color-scheme: dark;
+
+  --surface: 7 11 22;          /* page background      (ink-950) */
+  --panel: 15 21 38;           /* cards / surfaces     (ink-850) */
+  --elevated: 11 16 32;        /* insets / inputs      (ink-900) */
+  --hairline: 30 39 64;        /* subtle borders                */
+  --hairline-strong: 42 51 80; /* stronger borders     (ink-600) */
+  --hover: 255 255 255;        /* hover/tint overlay (used w/ alpha) */
+
+  --fg: 248 250 252;           /* headings                       */
+  --body: 226 232 240;         /* body text                      */
+  --muted: 148 163 184;        /* secondary text                 */
+  --subtle: 100 116 139;       /* tertiary text                  */
+  --accent: 56 189 248;        /* links / focus accent           */
+
+  --card-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px -18px rgba(0, 0, 0, 0.8);
+  --bg-glow-1: rgba(79, 70, 229, 0.12);
+  --bg-glow-2: rgba(34, 211, 238, 0.10);
+  --scrollbar: #2a3350;
+}
+
+.theme-day {
+  color-scheme: light;
+
+  --surface: 244 246 250;
+  --panel: 255 255 255;
+  --elevated: 248 250 252;
+  --hairline: 226 230 238;
+  --hairline-strong: 209 216 228;
+  --hover: 15 23 42;
+
+  --fg: 15 23 42;
+  --body: 30 41 59;
+  --muted: 71 85 105;
+  --subtle: 100 116 139;
+  --accent: 37 99 235;
+
+  --card-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.14);
+  --bg-glow-1: rgba(79, 70, 229, 0.06);
+  --bg-glow-2: rgba(14, 165, 233, 0.06);
+  --scrollbar: #cbd5e1;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-surface text-body font-sans antialiased;
+  background-image:
+    radial-gradient(60rem 60rem at 85% -10%, var(--bg-glow-1), transparent 60%),
+    radial-gradient(50rem 50rem at -10% 10%, var(--bg-glow-2), transparent 55%);
+  background-attachment: fixed;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Thin scrollbars that follow the active theme. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 9999px; }
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-hairline bg-panel shadow-card;
+  }
+  .card-pad { @apply p-5; }
+  .stat-label { @apply text-xs font-medium uppercase tracking-wider text-muted; }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold
+           transition focus:outline-none focus:ring-2 focus:ring-brand-500/50 disabled:opacity-50
+           disabled:cursor-not-allowed;
+  }
+  .btn-primary { @apply btn bg-brand-gradient text-white shadow-glow hover:brightness-110; }
+  .btn-ghost { @apply btn border border-hairline-strong bg-hover/[0.06] text-body hover:bg-hover/10; }
+  .input {
+    @apply w-full rounded-xl border border-hairline-strong bg-elevated px-3 py-2 text-sm text-fg
+           placeholder:text-subtle focus:border-brand-500/60 focus:outline-none
+           focus:ring-2 focus:ring-brand-500/30;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+  .link-muted { @apply text-muted hover:text-accent transition; }
+}

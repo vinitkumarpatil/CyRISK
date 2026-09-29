@@ -1,0 +1,9 @@
+asset_id,title,cve_id,cvss,severity,category,status,exploit_available,internet_exposed,patch_available,age_days,remediation_cost_inr,source
+1,Outdated OpenSSL on public gateway,CVE-2023-0464,7.5,High,software,open,true,true,true,45,350000,Sample Import
+1,Weak TLS ciphers on load balancer,,5.9,Medium,config,open,false,true,true,20,150000,Sample Import
+2,SQL injection in reporting module,CVE-2023-34362,9.8,Critical,web,open,true,true,false,10,600000,Sample Import
+2,Missing security headers,,4.3,Low,web,remediating,false,true,true,60,80000,Sample Import
+3,Privilege escalation in batch service,CVE-2024-23897,8.6,High,software,open,true,false,false,15,450000,Sample Import
+3,Unrestricted admin accounts,,6.5,Medium,identity,open,false,false,true,90,220000,Sample Import
+4,Unpatched OS package backlog,,7.2,High,patch,open,false,false,false,120,300000,Sample Import
+5,Flat network segment for DB tier,,6.8,Medium,network,open,false,false,true,200,500000,Sample Import
