@@ -1,13 +1,12 @@
 // Vulnerabilities — telemetry-sourced findings with CVSS, exploitability and the
 // modelled annual loss each one contributes. Filterable by severity/status.
 
-import { useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ShieldAlert, Bug, Wifi, Wrench } from 'lucide-react'
 import { useApi } from '../lib/useApi'
 import {
   Loading, ErrorState, CardPad, SectionTitle, Money, Chip, RiskBadge, Disclaimer, StatCard,
 } from '../components/ui'
-import { DataTable, Column } from '../components/DataTable'
 import { num } from '../lib/format'
 
 interface Vuln {
@@ -22,37 +21,49 @@ interface VulnResp {
 
 const SEVS = ['Critical', 'High', 'Medium', 'Low']
 
+const SubCategoryNode = ({ title, delay, isActive, isExpanded, onClick, children }: {
+  title: string; delay: string; isActive: boolean; isExpanded: boolean; onClick: () => void; children: React.ReactNode
+}) => {
+  return (
+    <div className={`relative transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive ? delay : ''}`}>
+      {/* Connector Line */}
+      <div className="absolute top-1/2 -left-8 w-8 h-px bg-gray-200" />
+      
+      <button 
+        onClick={onClick}
+        className="w-full text-left p-4 rounded-xl bg-white/80 backdrop-blur-md border border-white/40 shadow-sm hover:shadow-md transition-all"
+      >
+        <div className="font-medium text-gray-800">{title}</div>
+        
+        {/* Expanded Content */}
+        <div className={`
+          overflow-hidden transition-all duration-[500ms] ease-in-out
+          ${isExpanded ? 'max-h-48 mt-3 opacity-100' : 'max-h-0 mt-0 opacity-0'}
+        `}>
+          {children}
+        </div>
+      </button>
+    </div>
+  )
+}
+
 export default function Vulnerabilities() {
   const { data, loading, error, reload } = useApi<VulnResp>('/api/vulnerabilities', { refreshOnTelemetry: true })
   const [sev, setSev] = useState<string | null>(null)
   const [status, setStatus] = useState<string | null>(null)
+  const [activeVulnId, setActiveVulnId] = useState<number | null>(null)
+  const [expandedSubCategory, setExpandedSubCategory] = useState<string | null>(null)
 
   const rows = useMemo(() => {
     if (!data) return []
-    return data.vulnerabilities.filter(v => (!sev || v.severity === sev) && (!status || v.status === status))
+    // Sort by ale_inr desc just to have a good default order like DataTable had
+    return data.vulnerabilities
+      .filter(v => (!sev || v.severity === sev) && (!status || v.status === status))
+      .sort((a, b) => b.ale_inr - a.ale_inr)
   }, [data, sev, status])
 
   if (loading) return <Loading label="Loading vulnerabilities…" />
   if (error || !data) return <ErrorState message={error ?? 'No data'} onRetry={reload} />
-
-  const cols: Column<Vuln>[] = [
-    { key: 'cve', header: 'Vulnerability', render: v => (
-      <div><div className="font-medium text-fg">{v.title}</div>
-        <div className="text-xs text-subtle">{v.cve_id || '—'} · {v.asset_name}</div></div>
-    ) },
-    { key: 'cvss', header: 'CVSS', align: 'right', sortValue: v => v.cvss, render: v => v.cvss.toFixed(1) },
-    { key: 'sev', header: 'Severity', render: v => <RiskBadge band={v.severity} /> },
-    { key: 'flags', header: 'Flags', render: v => (
-      <div className="flex gap-1">
-        {v.exploit_available && <span title="Exploit available" className="chip bg-risk-critical/15 text-risk-critical"><Bug className="h-3 w-3" /></span>}
-        {v.internet_exposed && <span title="Internet exposed" className="chip bg-risk-high/15 text-risk-high"><Wifi className="h-3 w-3" /></span>}
-        {v.patch_available && <span title="Patch available" className="chip bg-risk-low/15 text-risk-low"><Wrench className="h-3 w-3" /></span>}
-      </div>
-    ) },
-    { key: 'status', header: 'Status', render: v => <Chip className="bg-hover/10 text-body capitalize">{v.status}</Chip> },
-    { key: 'age', header: 'Age', align: 'right', sortValue: v => v.age_days, render: v => `${v.age_days}d` },
-    { key: 'ale', header: 'Annual loss', align: 'right', sortValue: v => v.ale_inr, render: v => <Money v={v.ale_inr} className="font-semibold text-risk-high" /> },
-  ]
 
   return (
     <div className="space-y-6">
@@ -67,7 +78,7 @@ export default function Vulnerabilities() {
         ))}
       </div>
 
-      <CardPad>
+      <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-black/[0.04] p-6 relative">
         <SectionTitle title={`${rows.length} of ${data.count} vulnerabilities`} subtitle="Click severity cards to filter"
           right={
             <div className="flex gap-1.5">
@@ -79,8 +90,113 @@ export default function Vulnerabilities() {
               ))}
             </div>
           } />
-        <DataTable columns={cols} rows={rows} initialSort={{ key: 'ale', dir: 'desc' }} />
-      </CardPad>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
+          {rows.map(v => {
+            const isActive = activeVulnId === v.id;
+            const isDimmed = activeVulnId !== null && !isActive;
+
+            return (
+              <div key={v.id} className={`relative group perspective-1000 ${isActive ? 'z-50' : 'z-10'}`}>
+                {/* Node Body */}
+                <button
+                  onClick={() => {
+                    setActiveVulnId(isActive ? null : v.id);
+                    setExpandedSubCategory(null);
+                  }}
+                  className={`
+                    relative z-10 w-full text-left p-5 rounded-2xl bg-white border border-black/5
+                    transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]
+                    ${isActive ? 'scale-[1.05] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.15)] ring-1 ring-black/10' : 'hover:bg-gray-50/50'}
+                    ${isDimmed ? 'opacity-30 blur-[1px] scale-95 pointer-events-none' : 'opacity-100'}
+                  `}
+                >
+                  <div className="font-semibold text-gray-900 line-clamp-2">{v.title}</div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <RiskBadge band={v.severity} />
+                    <span className="text-sm text-gray-500">{v.cve_id || '—'}</span>
+                  </div>
+                  <div className="text-sm text-gray-500 mt-2 truncate">Asset: {v.asset_name}</div>
+                  <div className="text-sm text-gray-500 mt-1">CVSS: {v.cvss.toFixed(1)}</div>
+                </button>
+
+                {/* Subcategory Branches (Only rendered/visible when active) */}
+                <div className={`
+                  absolute top-0 right-[-300px] w-64 flex flex-col gap-4 pointer-events-none
+                  transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]
+                  ${isActive ? 'opacity-100 translate-x-0 pointer-events-auto' : 'opacity-0 -translate-x-12'}
+                `}>
+                   {/* Subcategory: Risk Assessment */}
+                   <SubCategoryNode 
+                     title="Risk Assessment" 
+                     delay="delay-[100ms]"
+                     isActive={isActive}
+                     isExpanded={expandedSubCategory === 'risk'}
+                     onClick={() => setExpandedSubCategory(prev => prev === 'risk' ? null : 'risk')}
+                   >
+                     <div className="text-sm text-gray-600 space-y-2">
+                       <div className="flex justify-between">
+                         <span className="text-gray-500">Annual Loss (ALE)</span>
+                         <Money v={v.ale_inr} className="font-semibold text-risk-high" />
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-500">Single Loss (SLE)</span>
+                         <Money v={v.sle_inr} className="font-medium" />
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-500">Likelihood</span>
+                         <span className="font-medium">{(v.likelihood * 100).toFixed(1)}%</span>
+                       </div>
+                     </div>
+                   </SubCategoryNode>
+
+                   {/* Subcategory: Details */}
+                   <SubCategoryNode 
+                     title="Details" 
+                     delay="delay-[150ms]"
+                     isActive={isActive}
+                     isExpanded={expandedSubCategory === 'details'}
+                     onClick={() => setExpandedSubCategory(prev => prev === 'details' ? null : 'details')}
+                   >
+                     <div className="text-sm text-gray-600 space-y-1">
+                       <div className="flex justify-between">
+                         <span className="text-gray-500">Age</span>
+                         <span>{v.age_days} days</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-500">Status</span>
+                         <Chip className="bg-hover/10 text-body capitalize">{v.status}</Chip>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-gray-500">Category</span>
+                         <span>{v.category}</span>
+                       </div>
+                     </div>
+                   </SubCategoryNode>
+
+                   {/* Subcategory: Flags */}
+                   <SubCategoryNode 
+                     title="Flags" 
+                     delay="delay-[200ms]"
+                     isActive={isActive}
+                     isExpanded={expandedSubCategory === 'flags'}
+                     onClick={() => setExpandedSubCategory(prev => prev === 'flags' ? null : 'flags')}
+                   >
+                     <div className="flex flex-wrap gap-2">
+                       {v.exploit_available && <span title="Exploit available" className="chip bg-risk-critical/15 text-risk-critical flex items-center gap-1"><Bug className="h-3 w-3" /> Exploit</span>}
+                       {v.internet_exposed && <span title="Internet exposed" className="chip bg-risk-high/15 text-risk-high flex items-center gap-1"><Wifi className="h-3 w-3" /> Exposed</span>}
+                       {v.patch_available && <span title="Patch available" className="chip bg-risk-low/15 text-risk-low flex items-center gap-1"><Wrench className="h-3 w-3" /> Patch</span>}
+                       {!v.exploit_available && !v.internet_exposed && !v.patch_available && (
+                         <span className="text-gray-400 text-sm italic">No special flags</span>
+                       )}
+                     </div>
+                   </SubCategoryNode>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <Disclaimer />
     </div>
