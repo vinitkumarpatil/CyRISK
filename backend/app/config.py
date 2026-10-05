@@ -11,11 +11,12 @@ DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{(BASE_DIR / 'cyberrisk.db'
 APP_NAME = "CyberRisk Quant Platform"
 APP_ENV = os.getenv("APP_ENV", "development")
 
-# CORS: comma-separated origins. Vite dev server defaults included.
-CORS_ORIGINS = os.getenv(
+# CORS: comma-separated origins. Vite dev server defaults and production Render frontend included.
+_raw_cors = os.getenv(
     "CORS_ORIGINS",
-    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173",
-).split(",")
+    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173,https://cyrisk-2.onrender.com",
+)
+CORS_ORIGINS = [origin.strip() for origin in _raw_cors.split(",") if origin.strip()]
 
 # --- Auth (lightweight, demo-only) -------------------------------------------
 # NOTE: demo-grade token signing key. Override in .env for any real deployment.
