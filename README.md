@@ -2,8 +2,6 @@
 
 <div align="center">
 
-![RiskQuant Banner](IMGS/Screenshot%202026-09-27%20221425.png)
-
 ### **AI-Powered Continuous Cyber Risk Quantification & Investment Optimization Platform**
 
 [![Smart India Hackathon 2026](https://img.shields.io/badge/SIH-2026-orange.svg?style=for-the-badge)](https://sih.gov.in/)
@@ -319,18 +317,6 @@ The web application features 14 dedicated views organized into 6 functional modu
 
 ---
 
-### Screenshot Gallery
-
-| Executive Dashboard | What-if Scenario Simulator |
-|:---:|:---:|
-| ![Dashboard](IMGS/Screenshot%202026-09-27%20221425.png) | ![Scenarios](IMGS/Screenshot%202026-09-27%20221447.png) |
-
-| Investment Optimizer | Compliance Frameworks |
-|:---:|:---:|
-| ![Optimizer](IMGS/Screenshot%202026-09-27%20221508.png) | ![Frameworks](IMGS/Screenshot%202026-09-27%20221518.png) |
-
----
-
 ## 🛡️ Security Framework Mappings
 
 RiskQuant automatically maps technical control coverage and vulnerability findings across major international and Indian regulatory frameworks:
@@ -455,8 +441,7 @@ CyRISK/
 │   └── vite.config.ts              # Vite dev server & proxy configuration
 │
 ├── docs/                           # Architecture specs, conventions, and runbooks
-├── sample_data/                    # Sample CSV/JSON imports for assets & vulnerabilities
-└── IMGS/                           # Application screenshots & UI gallery
+└── sample_data/                    # Sample CSV/JSON imports for assets & vulnerabilities
 ```
 
 ---
