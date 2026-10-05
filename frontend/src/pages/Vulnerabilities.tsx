@@ -27,13 +27,16 @@ const SubCategoryNode = ({ title, delay, isActive, isExpanded, onClick, children
   return (
     <div className={`relative transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive ? delay : ''}`}>
       {/* Connector Line */}
-      <div className="absolute top-1/2 -left-8 w-8 h-px bg-gray-200" />
+      <div className="absolute top-1/2 -left-8 w-8 h-px bg-hover/20" />
       
       <button 
-        onClick={onClick}
-        className="w-full text-left p-4 rounded-xl bg-white/80 backdrop-blur-md border border-white/40 shadow-sm hover:shadow-md transition-all"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+        className="w-full text-left p-4 rounded-xl bg-elevated/80 backdrop-blur-md border border-hairline shadow-sm hover:shadow-md transition-all"
       >
-        <div className="font-medium text-gray-800">{title}</div>
+        <div className="font-medium text-fg">{title}</div>
         
         {/* Expanded Content */}
         <div className={`
@@ -78,7 +81,13 @@ export default function Vulnerabilities() {
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-[0_2px_8px_rgb(0,0,0,0.04)] border border-black/[0.04] p-6 relative">
+      <div 
+        className="card card-pad relative"
+        onClick={() => {
+          setActiveVulnId(null);
+          setExpandedSubCategory(null);
+        }}
+      >
         <SectionTitle title={`${rows.length} of ${data.count} vulnerabilities`} subtitle="Click severity cards to filter"
           right={
             <div className="flex gap-1.5">
@@ -100,24 +109,25 @@ export default function Vulnerabilities() {
               <div key={v.id} className={`relative group perspective-1000 ${isActive ? 'z-50' : 'z-10'}`}>
                 {/* Node Body */}
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setActiveVulnId(isActive ? null : v.id);
                     setExpandedSubCategory(null);
                   }}
                   className={`
-                    relative z-10 w-full text-left p-5 rounded-2xl bg-white border border-black/5
+                    relative z-10 w-full text-left p-5 rounded-2xl bg-elevated border border-hairline
                     transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]
-                    ${isActive ? 'scale-[1.05] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.15)] ring-1 ring-black/10' : 'hover:bg-gray-50/50'}
-                    ${isDimmed ? 'opacity-30 blur-[1px] scale-95 pointer-events-none' : 'opacity-100'}
+                    ${isActive ? 'scale-[1.05] shadow-[0_24px_48px_-12px_rgba(0,0,0,0.15)] ring-1 ring-fg/10' : 'hover:bg-hover/[0.03]'}
+                    ${isDimmed ? 'opacity-30 blur-[1px] scale-95' : 'opacity-100'}
                   `}
                 >
-                  <div className="font-semibold text-gray-900 line-clamp-2">{v.title}</div>
+                  <div className="font-semibold text-fg line-clamp-2">{v.title}</div>
                   <div className="flex items-center gap-2 mt-2">
                     <RiskBadge band={v.severity} />
-                    <span className="text-sm text-gray-500">{v.cve_id || '—'}</span>
+                    <span className="text-sm text-muted">{v.cve_id || '—'}</span>
                   </div>
-                  <div className="text-sm text-gray-500 mt-2 truncate">Asset: {v.asset_name}</div>
-                  <div className="text-sm text-gray-500 mt-1">CVSS: {v.cvss.toFixed(1)}</div>
+                  <div className="text-sm text-muted mt-2 truncate">Asset: {v.asset_name}</div>
+                  <div className="text-sm text-muted mt-1">CVSS: {v.cvss.toFixed(1)}</div>
                 </button>
 
                 {/* Subcategory Branches (Only rendered/visible when active) */}
@@ -134,17 +144,17 @@ export default function Vulnerabilities() {
                      isExpanded={expandedSubCategory === 'risk'}
                      onClick={() => setExpandedSubCategory(prev => prev === 'risk' ? null : 'risk')}
                    >
-                     <div className="text-sm text-gray-600 space-y-2">
+                     <div className="text-sm text-body space-y-2">
                        <div className="flex justify-between">
-                         <span className="text-gray-500">Annual Loss (ALE)</span>
+                         <span className="text-muted">Annual Loss (ALE)</span>
                          <Money v={v.ale_inr} className="font-semibold text-risk-high" />
                        </div>
                        <div className="flex justify-between">
-                         <span className="text-gray-500">Single Loss (SLE)</span>
+                         <span className="text-muted">Single Loss (SLE)</span>
                          <Money v={v.sle_inr} className="font-medium" />
                        </div>
                        <div className="flex justify-between">
-                         <span className="text-gray-500">Likelihood</span>
+                         <span className="text-muted">Likelihood</span>
                          <span className="font-medium">{(v.likelihood * 100).toFixed(1)}%</span>
                        </div>
                      </div>
@@ -158,17 +168,17 @@ export default function Vulnerabilities() {
                      isExpanded={expandedSubCategory === 'details'}
                      onClick={() => setExpandedSubCategory(prev => prev === 'details' ? null : 'details')}
                    >
-                     <div className="text-sm text-gray-600 space-y-1">
+                     <div className="text-sm text-body space-y-1">
                        <div className="flex justify-between">
-                         <span className="text-gray-500">Age</span>
+                         <span className="text-muted">Age</span>
                          <span>{v.age_days} days</span>
                        </div>
                        <div className="flex justify-between">
-                         <span className="text-gray-500">Status</span>
+                         <span className="text-muted">Status</span>
                          <Chip className="bg-hover/10 text-body capitalize">{v.status}</Chip>
                        </div>
                        <div className="flex justify-between">
-                         <span className="text-gray-500">Category</span>
+                         <span className="text-muted">Category</span>
                          <span>{v.category}</span>
                        </div>
                      </div>
@@ -187,7 +197,7 @@ export default function Vulnerabilities() {
                        {v.internet_exposed && <span title="Internet exposed" className="chip bg-risk-high/15 text-risk-high flex items-center gap-1"><Wifi className="h-3 w-3" /> Exposed</span>}
                        {v.patch_available && <span title="Patch available" className="chip bg-risk-low/15 text-risk-low flex items-center gap-1"><Wrench className="h-3 w-3" /> Patch</span>}
                        {!v.exploit_available && !v.internet_exposed && !v.patch_available && (
-                         <span className="text-gray-400 text-sm italic">No special flags</span>
+                         <span className="text-subtle text-sm italic">No special flags</span>
                        )}
                      </div>
                    </SubCategoryNode>
